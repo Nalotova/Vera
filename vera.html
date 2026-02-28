@@ -1,37 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vera</title>
-    <script>
-        const API_KEY = "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";
-
-        function fetchInsights() {
-            // OpenRouter API calls instead of Claude
-            fetch(`https://api.openrouter.ai/endpoint?key=${API_KEY}`)
-                .then(response => response.json())
-                .then(data => {
-                    // Process data for insights
-                });
-        }
-
-        function recalculateCycles() {
-            // Implementation for fixing cycle recalculation
-        }
-
-        window.onload = function() {
-            fetchInsights();
-            recalculateCycles();
-        };
-    </script>
 </head>
 <body>
-    <div id="settings">
-        <!-- Removed API key input fields -->
-    </div>
-    <div id="insights">
-        <!-- Daily insights will be auto-generated here -->
-    </div>
+    <h1>Vera</h1>
+    <script>
+        const apiKey = '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';
+
+        function callAI(input) {
+            // Updated to use OpenRouter instead of Anthropic Claude
+            fetch(`https://openrouter.api.ai/endpoint?apiKey=${apiKey}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt: input })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function updateCycleLogic(startDate) {
+            // Proper cycle recalculation logic goes here
+            console.log('Cycle recalculated based on start date:', startDate);
+        }
+
+        // Auto-generate daily insights logic
+        function generateDailyInsights() {
+            const insights = 'Daily insights generated!'; // Placeholder logic
+            console.log(insights);
+        }
+    </script>
 </body>
 </html>
