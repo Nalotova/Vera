@@ -1,0 +1,2065 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d0d1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Véra — персональный дневник цикла, биоритмов и таро">
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiVsOpcmEiLCJzaG9ydF9uYW1lIjoiVsOpcmEiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzBkMGQxYSIsInRoZW1lX2NvbG9yIjoiIzBkMGQxYSIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBIQStQZz09Iiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwifV19">
+<title>Véra</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0d0d1a;
+  --deep: #111128;
+  --mid: #1a1a35;
+  --lift: #232342;
+  --veil: #2e2e50;
+  --gold: #c9a84c;
+  --gold2: #e8c96a;
+  --rose: #d4788a;
+  --moon: #e8e0d0;
+  --mist: #a09880;
+  --fog:  #5a5470;
+  --teal: #4ecdc4;
+  --soft: rgba(255,255,255,.055);
+  --softer: rgba(255,255,255,.03);
+  --border: rgba(201,168,76,.12);
+  --border2: rgba(201,168,76,.25);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{height:100%; touch-action:manipulation}
+body {
+  background: var(--ink);
+  color: var(--moon);
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Atmospheric BG ── */
+body::before {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(100,80,180,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 10% 80%, rgba(201,168,76,.06) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 50% at 90% 30%, rgba(212,120,138,.07) 0%, transparent 50%);
+}
+body::after {
+  content:'';
+  position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 200px;
+}
+
+/* ── Install Prompt ── */
+#installPrompt {
+  display:none; position:fixed; bottom:80px; left:50%;
+  transform:translateX(-50%);
+  background:var(--lift); border:1px solid var(--border2);
+  border-radius:16px; padding:16px 20px; z-index:300;
+  box-shadow:0 10px 40px rgba(0,0,0,.5);
+  max-width:320px; width:90%;
+}
+#installPrompt.show { display:block; animation:rise .3s ease }
+.install-title { font-family:'Cormorant Garamond',serif; font-size:18px; color:var(--gold2); margin-bottom:8px }
+.install-text { font-size:13px; color:var(--mist); margin-bottom:12px }
+.install-btns { display:flex; gap:8px }
+.install-btn { flex:1; padding:10px; border-radius:10px; border:none; font-family:'Jost',sans-serif; font-size:13px; cursor:pointer }
+.install-btn.primary { background:var(--gold); color:#1a1400 }
+.install-btn.secondary { background:var(--soft); color:var(--moon); border:1px solid var(--border2) }
+
+/* ── Nav ── */
+.nav {
+  position: sticky; top:0; z-index:50;
+  background: rgba(13,13,26,.88);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  height: 56px; padding: 0 16px; gap:0;
+}
+.brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 500; font-style: italic;
+  color: var(--gold2); letter-spacing:.05em;
+  margin-right: 18px; flex-shrink:0;
+}
+.brand sup { font-size:10px; vertical-align:super; margin-left:1px }
+.tabs { display:flex; gap:2px; flex:1; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch }
+.tabs::-webkit-scrollbar { display:none }
+.tab {
+  padding: 7px 13px; border-radius: 8px;
+  font-family:'Jost',sans-serif; font-size:12px; font-weight:400; letter-spacing:.03em;
+  color: var(--fog); cursor:pointer; white-space:nowrap;
+  border:none; background:none; touch-action:manipulation;
+  transition: all .2s;
+}
+.tab:hover, .tab:active { color: var(--mist) }
+.tab.on { color: var(--moon); background: var(--soft) }
+.moon-live { font-size:18px; margin-left:auto; flex-shrink:0 }
+
+/* ── Pages ── */
+.page { display:none; position:relative; z-index:1; min-height:calc(100vh - 56px) }
+.page.on { display:block; animation: rise .4s ease both }
+.wrap { max-width:860px; margin:0 auto; padding:28px 16px 80px }
+
+/* ── Typography ── */
+.display {
+  font-family:'Cormorant Garamond',serif;
+  font-size: clamp(28px,6vw,44px);
+  font-weight:400; font-style:italic; line-height:1.1;
+  letter-spacing:-.01em;
+}
+.title {
+  font-family:'Cormorant Garamond',serif;
+  font-size: clamp(20px,4vw,28px);
+  font-weight:400; line-height:1.2;
+}
+.label { font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--fog); font-weight:500 }
+.muted { color:var(--mist); font-size:13px; line-height:1.65 }
+.gold { color:var(--gold2) }
+.rose { color:var(--rose) }
+
+/* ── Cards ── */
+.card {
+  background: var(--softer);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding:22px;
+  backdrop-filter: blur(8px);
+}
+.card + .card { margin-top:10px }
+.card-sm { padding: 16px }
+.card-gold {
+  background: linear-gradient(135deg, rgba(201,168,76,.06), rgba(232,201,106,.03));
+  border-color: var(--border2);
+}
+
+/* ── Grid ── */
+.g2 { display:grid; grid-template-columns:repeat(2,1fr); gap:10px }
+.g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:10px }
+@media(max-width:520px){ .g3 { grid-template-columns:repeat(2,1fr) } }
+@media(max-width:380px){ .g2 { grid-template-columns:1fr } }
+
+/* ── Divider ── */
+.sep {
+  height:1px; margin:18px 0;
+  background: linear-gradient(90deg, transparent, var(--border2), transparent);
+}
+
+/* ── Buttons ── */
+.btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding: 10px 20px; border-radius:10px;
+  font-family:'Jost',sans-serif; font-size:13px; font-weight:400; letter-spacing:.04em;
+  cursor:pointer; border:none; touch-action:manipulation;
+  transition: all .2s;
+}
+.btn:hover, .btn:active { filter:brightness(1.1); transform:translateY(-1px) }
+.btn:active { transform:translateY(0) }
+.btn-gold { background: linear-gradient(135deg,#b8913a,#d4aa50); color:#1a1400 }
+.btn-ghost { background:var(--soft); color:var(--moon); border:1px solid var(--border2) }
+.btn-rose { background: linear-gradient(135deg,#b05060,#c96878); color:#fff }
+.btn-ai { background: linear-gradient(135deg,#2d5a5a,#3d7a70); color:var(--teal) }
+.btn-sm { padding:7px 14px; font-size:11px }
+.btn-w { width:100% }
+
+/* ── Inputs ── */
+.field { display:flex; flex-direction:column; gap:6px }
+.field label { font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--fog) }
+.field input, .field select, .field textarea {
+  background: var(--mid);
+  border: 1px solid var(--border2);
+  border-radius: 10px; padding:10px 14px;
+  color: var(--moon); font-family:'Jost',sans-serif; font-size:14px; font-weight:300;
+  outline:none; transition:border-color .2s;
+  -webkit-appearance:none; appearance:none;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold) }
+.field textarea { min-height:80px; resize:vertical; line-height:1.6 }
+.field select option { background: var(--mid) }
+.fgrid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:14px 0 }
+@media(max-width:480px){ .fgrid { grid-template-columns:1fr } }
+
+/* ── Tags ── */
+.tag {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 10px; border-radius:20px; font-size:11px; letter-spacing:.04em;
+}
+.tag-gold { background:rgba(201,168,76,.1); border:1px solid rgba(201,168,76,.25); color:var(--gold2) }
+.tag-rose { background:rgba(212,120,138,.1); border:1px solid rgba(212,120,138,.25); color:var(--rose) }
+.tag-teal { background:rgba(78,205,196,.08); border:1px solid rgba(78,205,196,.2); color:var(--teal) }
+.tag-mist { background:rgba(160,152,128,.08); border:1px solid rgba(160,152,128,.2); color:var(--mist) }
+
+/* ── Moon phases ── */
+.moon-phase { font-size:42px; line-height:1 }
+.moon-strip {
+  display:flex; gap:4px; justify-content:space-between;
+  margin:14px 0; overflow-x:auto; padding:4px 0;
+  -webkit-overflow-scrolling:touch; scrollbar-width:none;
+}
+.moon-strip::-webkit-scrollbar { display:none }
+.moon-day {
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  min-width:32px; padding:8px 4px; border-radius:10px;
+  font-size:10px; color:var(--fog);
+  transition:background .2s;
+}
+.moon-day.today { background:var(--soft); color:var(--gold2) }
+.moon-day.today .mico { filter:drop-shadow(0 0 6px rgba(201,168,76,.5)) }
+.mico { font-size:20px }
+
+/* ── Cycle Calendar ── */
+.cal-hdr { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin-bottom:5px }
+.cal-hdr span { text-align:center; font-size:10px; color:var(--fog); letter-spacing:.06em }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px }
+.cday {
+  aspect-ratio:1; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:400; cursor:pointer;
+  background: var(--softer); color:var(--fog);
+  border:1px solid transparent;
+  transition:all .18s; position:relative;
+  touch-action:manipulation;
+}
+.cday:hover, .cday:active { border-color:var(--border2); color:var(--mist) }
+.cday.today { border-color:var(--gold); color:var(--gold2) }
+.cday.period { background:rgba(212,120,138,.15); border-color:rgba(212,120,138,.3); color:var(--rose) }
+.cday.fertile { background:rgba(78,205,196,.08); border-color:rgba(78,205,196,.2); color:var(--teal) }
+.cday.ovulation { background:rgba(201,168,76,.15); border-color:var(--border2); color:var(--gold2) }
+.cday.has-note::after {
+  content:''; position:absolute; bottom:3px; left:50%; transform:translateX(-50%);
+  width:3px; height:3px; border-radius:50%; background:var(--gold);
+}
+.cal-legend { display:flex; gap:14px; flex-wrap:wrap; font-size:11px; color:var(--mist); margin-top:10px }
+.ldot { width:8px; height:8px; border-radius:2px; display:inline-block; margin-right:4px; vertical-align:middle }
+
+/* ── Symptom pills ── */
+.symp-row { display:flex; gap:6px; flex-wrap:wrap; margin:10px 0 }
+.spill {
+  padding:7px 14px; border-radius:20px; font-size:12px; font-weight:400;
+  background:var(--mid); border:1px solid var(--border);
+  color:var(--mist); cursor:pointer; touch-action:manipulation;
+  transition:all .2s;
+}
+.spill:hover, .spill:active { border-color:var(--border2) }
+.spill.on { background:rgba(201,168,76,.1); border-color:rgba(201,168,76,.35); color:var(--gold2) }
+
+/* ── Energy slider ── */
+.energy-track {
+  height:8px; background:var(--mid); border-radius:4px;
+  border:1px solid var(--border); overflow:visible; position:relative; margin:10px 0;
+}
+input[type=range] {
+  width:100%; accent-color:var(--gold);
+  margin:0; padding:0; height:20px;
+  -webkit-appearance:none; appearance:none;
+  background:transparent;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none; appearance:none;
+  width:20px; height:20px; border-radius:50%;
+  background:var(--gold); cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+input[type=range]::-webkit-slider-runnable-track {
+  height:8px; background:var(--mid); border-radius:4px;
+}
+.energy-labels { display:flex; justify-content:space-between; font-size:10px; color:var(--fog) }
+
+/* ── Biorhythm bars ── */
+.bio-row { display:flex; align-items:center; gap:12px; margin-bottom:12px }
+.bio-label { font-size:12px; min-width:82px; color:var(--mist) }
+.bio-track {
+  flex:1; height:8px; background:var(--mid); border-radius:4px;
+  border:1px solid var(--border); position:relative; overflow:hidden;
+}
+.bio-zero { position:absolute; left:50%; top:0; width:1px; height:100%; background:var(--border2) }
+.bio-fill { height:100%; border-radius:4px; position:absolute; transition:width .9s cubic-bezier(.4,0,.2,1) }
+.bio-val { font-size:12px; min-width:44px; text-align:right }
+.bio-week { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-top:12px }
+.bw-day {
+  text-align:center; background:var(--mid); border-radius:8px; padding:8px 3px;
+  border:1px solid var(--border);
+}
+.bw-day.today { border-color:var(--border2) }
+.bw-lbl { font-size:9px; color:var(--fog); margin-bottom:4px }
+.bw-val { font-family:'Cormorant Garamond',serif; font-size:15px; font-weight:500 }
+
+/* ── Tarot ── */
+.tarot-card-display {
+  background: linear-gradient(160deg, var(--lift), var(--mid));
+  border: 1px solid var(--border2);
+  border-radius: 16px; padding:24px;
+  text-align:center; position:relative; overflow:hidden;
+}
+.tarot-card-display::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,.08), transparent 60%);
+}
+.tarot-name-big {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(22px,5vw,34px); font-weight:400; font-style:italic;
+  color:var(--gold2); margin:8px 0 4px;
+}
+.tarot-num { font-size:11px; letter-spacing:.12em; color:var(--fog) }
+.tarot-symbol { font-size:52px; margin:12px 0 }
+
+/* ── Analysis block ── */
+.analysis-glow {
+  background: linear-gradient(135deg, rgba(13,13,26,.9), rgba(26,26,53,.7));
+  border: 1px solid var(--border2);
+  border-radius:20px; padding:24px;
+  position:relative; overflow:hidden;
+}
+.analysis-glow::before {
+  content:''; position:absolute; inset:0; border-radius:20px; pointer-events:none;
+  background: radial-gradient(ellipse 70% 50% at 50% -10%, rgba(201,168,76,.07), transparent);
+}
+.insight-text {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(15px,3vw,18px); font-style:italic;
+  line-height:1.8; color:var(--moon);
+}
+
+/* ── Journal entries ── */
+.entry {
+  background:var(--softer); border:1px solid var(--border);
+  border-radius:14px; padding:16px; margin-bottom:8px;
+  animation: rise .25s ease both;
+}
+.entry-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
+.entry-pills { display:flex; gap:5px; flex-wrap:wrap; margin-top:9px }
+.epill { font-size:10px; padding:2px 8px; border-radius:10px; background:var(--mid); color:var(--mist) }
+
+/* ── Chat ── */
+.chat-wrap {
+  border: 1px solid var(--border); border-radius:16px; overflow:hidden;
+}
+.chat-messages {
+  min-height:240px; max-height:380px; overflow-y:auto;
+  padding:16px; display:flex; flex-direction:column; gap:10px;
+  background: var(--softer);
+  -webkit-overflow-scrolling:touch;
+}
+.chat-messages::-webkit-scrollbar { width:3px }
+.chat-messages::-webkit-scrollbar-thumb { background:var(--veil); border-radius:2px }
+.cmsg { display:flex; gap:8px; animation:rise .2s ease both }
+.cmsg.user { flex-direction:row-reverse }
+.cav {
+  width:28px; height:28px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:14px;
+  background:var(--mid); border:1px solid var(--border);
+}
+.cmsg.ai .cav { border-color:rgba(201,168,76,.25) }
+.cbub {
+  max-width:84%; padding:11px 15px; border-radius:12px;
+  font-size:13px; line-height:1.7; font-weight:300;
+}
+.cmsg.ai .cbub { background:var(--mid); border:1px solid var(--border); border-bottom-left-radius:3px }
+.cmsg.user .cbub { background:rgba(201,168,76,.1); border:1px solid rgba(201,168,76,.2); border-bottom-right-radius:3px }
+.chat-input-row {
+  display:flex; gap:8px; padding:12px;
+  background:var(--mid); border-top:1px solid var(--border);
+}
+.chat-in {
+  flex:1; background:var(--lift); border:1px solid var(--border);
+  border-radius:8px; padding:9px 12px;
+  color:var(--moon); font-family:'Jost',sans-serif; font-size:13px; font-weight:300; outline:none;
+  transition:border-color .2s;
+}
+.chat-in:focus { border-color:var(--gold) }
+.chat-in::placeholder { color:var(--fog) }
+.dot-pulse { display:flex; gap:3px; padding:3px 0 }
+.dot-pulse span { width:4px; height:4px; border-radius:50%; background:var(--gold); animation:dp 1.2s infinite }
+.dot-pulse span:nth-child(2){ animation-delay:.2s }
+.dot-pulse span:nth-child(3){ animation-delay:.4s }
+
+/* ── Patterns chart ── */
+.pattern-row {
+  display:flex; align-items:center; gap:8px; margin-bottom:8px;
+  font-size:12px;
+}
+.pattern-bar { flex:1; height:6px; background:var(--mid); border-radius:3px; overflow:hidden }
+.pattern-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--rose),var(--gold2)) }
+
+/* ── Toast ── */
+#toast {
+  position:fixed; bottom:24px; left:50%;
+  transform:translateX(-50%) translateY(60px);
+  background:var(--lift); border:1px solid var(--border2);
+  border-radius:12px; padding:10px 22px;
+  font-size:13px; color:var(--moon); z-index:200;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap; pointer-events:none;
+}
+#toast.on { transform:translateX(-50%) translateY(0) }
+
+/* ── Modal ── */
+.modal-bg {
+  display:none; position:fixed; inset:0; z-index:100;
+  background:rgba(0,0,0,.65); backdrop-filter:blur(6px);
+  align-items:center; justify-content:center; padding:16px;
+}
+.modal-bg.on { display:flex }
+.modal {
+  background:var(--deep); border:1px solid var(--border2);
+  border-radius:22px; padding:26px; max-width:400px; width:100%;
+  animation:rise .3s ease both; max-height:85vh; overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.modal::-webkit-scrollbar { width:3px }
+.modal::-webkit-scrollbar-thumb { background:var(--veil) }
+
+/* ── API key banner ── */
+.api-banner {
+  background:linear-gradient(135deg,rgba(78,205,196,.05),rgba(201,168,76,.04));
+  border:1px solid rgba(78,205,196,.18); border-radius:14px; padding:14px;
+  margin-bottom:14px;
+}
+
+/* ── Animations ── */
+@keyframes rise { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes dp { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-4px);opacity:1} }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* ── Utility ── */
+.center { text-align:center }
+.mt8 { margin-top:8px }
+.mt12 { margin-top:12px }
+.mt16 { margin-top:16px }
+.mt20 { margin-top:20px }
+.flex { display:flex; align-items:center }
+.gap8 { gap:8px }
+.gap12 { gap:12px }
+.spread { justify-content:space-between }
+.wrap-flex { flex-wrap:wrap }
+</style>
+</head>
+<body>
+
+<!-- Install Prompt -->
+<div id="installPrompt">
+  <div class="install-title">✦ Установить Véra</div>
+  <div class="install-text">Добавьте приложение на главный экран для быстрого доступа и работы офлайн</div>
+  <div class="install-btns">
+    <button class="install-btn secondary" onclick="dismissInstall()">Позже</button>
+    <button class="install-btn primary" onclick="installPWA()">Установить</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="brand">Véra<sup>✦</sup></div>
+  <div class="tabs">
+    <button class="tab on" data-p="today">✦ Сегодня</button>
+    <button class="tab" data-p="cycle">🌸 Цикл</button>
+    <button class="tab" data-p="bio">🌊 Биоритмы</button>
+    <button class="tab" data-p="tarot">🃏 Таро</button>
+    <button class="tab" data-p="journal">📓 Дневник</button>
+    <button class="tab" data-p="analysis">🔮 Анализ</button>
+    <button class="tab" data-p="settings">⚙ Настройки</button>
+  </div>
+  <div class="moon-live" id="navMoon" title="Фаза луны">🌙</div>
+</nav>
+
+<!-- ════════ TODAY ════════ -->
+<div class="page on" id="page-today">
+<div class="wrap">
+
+  <div style="margin-bottom:24px">
+    <div class="label" id="todayDateLabel" style="margin-bottom:6px"></div>
+    <div class="display" id="todayGreeting">Добрый вечер</div>
+    <div class="muted" id="todayName" style="margin-top:4px"></div>
+  </div>
+
+  <!-- Moon + Cycle strip -->
+  <div class="card card-gold" style="margin-bottom:10px">
+    <div class="flex gap12 spread wrap-flex">
+      <div>
+        <div class="label" style="margin-bottom:8px">Луна сегодня</div>
+        <div class="flex gap12">
+          <div class="moon-phase" id="todayMoonEmoji">🌙</div>
+          <div>
+            <div class="title" id="todayMoonName" style="font-size:16px">—</div>
+            <div class="muted" style="font-size:12px;margin-top:2px" id="todayMoonDay">день лунного цикла —</div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div class="label" style="margin-bottom:6px">День цикла</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:400;color:var(--rose);line-height:1" id="todayCycleDay">—</div>
+        <div class="muted" style="font-size:11px" id="todayCyclePhase">—</div>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- 7-day moon strip -->
+    <div class="label" style="margin-bottom:10px">Луна — 7 дней</div>
+    <div class="moon-strip" id="moonStrip"></div>
+  </div>
+
+  <!-- Biorhythms today -->
+  <div class="card" style="margin-bottom:10px; display:none" id="todayBioCard">
+    <div class="label" style="margin-bottom:12px">Биоритмы сегодня</div>
+    <div id="todayBioMini"></div>
+    <div class="muted" style="font-size:11px;margin-top:8px" id="todayBioHint"></div>
+  </div>
+
+  <!-- Tarot today -->
+  <div class="card card-gold" style="margin-bottom:10px" id="todayTarotCard">
+    <div class="label" style="margin-bottom:10px">Карта дня</div>
+    <div id="todayTarotContent">
+      <div class="muted">Карта ещё не выбрана сегодня.<br>Перейди на вкладку 🃏 Таро</div>
+    </div>
+  </div>
+
+  <!-- Quick log -->
+  <div class="card" style="margin-bottom:10px">
+    <div class="label" style="margin-bottom:10px">Как ты сегодня?</div>
+    <div class="symp-row" id="quickSymptoms"></div>
+    <div style="margin-top:12px">
+      <div class="label" style="margin-bottom:8px">Энергия</div>
+      <input type="range" id="energySlider" min="1" max="10" value="5" oninput="updateEnergy()">
+      <div class="energy-labels"><span>😴 Истощена</span><span id="energyVal">5</span><span>⚡ Полна сил</span></div>
+    </div>
+    <div class="field" style="margin-top:12px">
+      <label>Заметка на сегодня</label>
+      <textarea id="quickNote" placeholder="Что чувствуешь, что важно запомнить..."></textarea>
+    </div>
+    <button class="btn btn-gold btn-w mt12" onclick="saveToday()">Сохранить день</button>
+  </div>
+
+  <!-- AI insight -->
+  <div class="analysis-glow" id="todayInsightCard">
+    <div class="label" style="margin-bottom:14px">✦ Сводка дня от Véra</div>
+    <div id="todayInsightContent">
+      <div class="muted" style="font-style:italic">Заполни профиль и введи API ключ — Véra будет каждое утро давать персональную сводку на основе твоего цикла, луны и биоритмов.</div>
+    </div>
+    <button class="btn btn-ai btn-sm mt12" onclick="generateDailyInsight()" id="insightBtn" style="display:none">✦ Получить сводку</button>
+  </div>
+
+</div>
+</div>
+
+<!-- ════════ CYCLE ════════ -->
+<div class="page" id="page-cycle">
+<div class="wrap">
+  <div class="display" style="margin-bottom:6px">Мой <em style="color:var(--rose)">цикл</em></div>
+  <div class="muted" style="margin-bottom:22px">Отслеживай менструацию, фертильное окно и овуляцию</div>
+
+  <div class="card card-gold">
+    <div class="flex gap8 spread" style="margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div class="label" id="calMonthLabel"></div>
+      <div class="flex gap8">
+        <button class="btn btn-ghost btn-sm" onclick="changeMonth(-1)">‹</button>
+        <button class="btn btn-ghost btn-sm" onclick="changeMonth(1)">›</button>
+      </div>
+    </div>
+    <div class="cal-hdr">
+      <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-legend mt12">
+      <span><span class="ldot" style="background:rgba(212,120,138,.5)"></span>Менструация</span>
+      <span><span class="ldot" style="background:rgba(78,205,196,.4)"></span>Фертильное окно</span>
+      <span><span class="ldot" style="background:rgba(201,168,76,.4)"></span>Овуляция</span>
+      <span><span class="ldot" style="background:var(--fog)"></span>Есть запись</span>
+    </div>
+  </div>
+
+  <div class="g2 mt8" style="margin-top:10px">
+    <div class="card card-sm">
+      <div class="label">Следующая</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--rose);margin:6px 0" id="cy-next">—</div>
+      <div class="muted" style="font-size:11px" id="cy-nextsub">—</div>
+    </div>
+    <div class="card card-sm">
+      <div class="label">Фертильное окно</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--teal);margin:6px 0" id="cy-fertile">—</div>
+      <div class="muted" style="font-size:11px" id="cy-fertsub">—</div>
+    </div>
+  </div>
+
+  <div class="card mt8" style="margin-top:10px">
+    <div class="label" style="margin-bottom:14px">Настройки цикла</div>
+    <div class="fgrid">
+      <div class="field"><label>Начало последней</label><input type="date" id="cy-last"></div>
+      <div class="field"><label>Длина цикла (дней)</label><input type="number" id="cy-len" value="28" min="21" max="45"></div>
+      <div class="field"><label>Длина менструации</label><input type="number" id="cy-dur" value="5" min="2" max="10"></div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="saveCycleSettings()">Обновить</button>
+  </div>
+
+  <div class="card" style="margin-top:10px;border-color:rgba(212,120,138,.2)">
+    <div class="label" style="margin-bottom:10px">Фаза и самочувствие</div>
+    <div id="cyclePhaseCard"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ════════ BIO ════════ -->
+<div class="page" id="page-bio">
+<div class="wrap">
+  <div class="display" style="margin-bottom:6px">Биоритмы</div>
+  <div class="muted" style="margin-bottom:22px">Физический · 23 дня &nbsp;|&nbsp; Эмоциональный · 28 дней &nbsp;|&nbsp; Интеллектуальный · 33 дня</div>
+
+  <div class="card card-gold">
+    <div class="field">
+      <label>Дата рождения</label>
+      <input type="date" id="bio-dob" onchange="renderBio()">
+    </div>
+  </div>
+
+  <div id="bioResult" style="display:none">
+    <div class="card mt8" style="margin-top:10px">
+      <div class="label" style="margin-bottom:16px">Сегодня</div>
+      <div id="bioBars"></div>
+    </div>
+
+    <div class="card" style="margin-top:10px">
+      <div class="label" style="margin-bottom:12px">Прогноз на 7 дней</div>
+      <div class="bio-week" id="bioWeek"></div>
+    </div>
+
+    <div class="card" id="bioAdviceCard" style="margin-top:10px"></div>
+  </div>
+  <div id="bioEmpty" class="card" style="margin-top:10px">
+    <div class="muted" style="font-style:italic;text-align:center;padding:12px 0">Введи дату рождения для расчёта биоритмов</div>
+  </div>
+</div>
+</div>
+
+<!-- ════════ TAROT ════════ -->
+<div class="page" id="page-tarot">
+<div class="wrap">
+  <div class="display" style="margin-bottom:6px">Карта <em style="color:var(--gold2)">дня</em></div>
+  <div class="muted" style="margin-bottom:22px">Вытяни карту, введи её название — Véra истолкует</div>
+
+  <div class="card card-gold" id="tarotTodaySection">
+    <div class="label" style="margin-bottom:12px" id="tarotTodayLabel">Карта на сегодня</div>
+    <div id="tarotTodayDisplay">
+      <div class="muted">Ещё не выбрана. Выберите карту ниже.</div>
+    </div>
+    <div class="sep"></div>
+
+    <div class="label" style="margin-bottom:10px">Выбрать карту</div>
+    <div class="field" style="margin-bottom:10px">
+      <label>Название карты</label>
+      <input type="text" id="tarotInput" list="tarotList" placeholder="Например: Луна, Мир, Маг...">
+      <datalist id="tarotList"></datalist>
+    </div>
+    <div class="field" style="margin-bottom:12px">
+      <label>Позиция</label>
+      <select id="tarotReversed">
+        <option value="upright">Прямая</option>
+        <option value="reversed">Перевёрнутая</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:12px">
+      <label>Твой вопрос или намерение (необязательно)</label>
+      <textarea id="tarotQuestion" placeholder="О чём ты думала, когда тянула карту?"></textarea>
+    </div>
+    <button class="btn btn-gold btn-w" onclick="interpretCard()">✦ Истолковать</button>
+  </div>
+
+  <div id="tarotResult" style="display:none;margin-top:10px">
+    <div class="tarot-card-display" id="tarotCardDisplay"></div>
+    <div class="analysis-glow mt8" style="margin-top:10px">
+      <div class="label" style="margin-bottom:12px">Толкование от Véra</div>
+      <div id="tarotInterpText" class="insight-text"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:10px" id="tarotHistCard">
+    <div class="label" style="margin-bottom:12px">История карт</div>
+    <div id="tarotHistory"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ════════ JOURNAL ════════ -->
+<div class="page" id="page-journal">
+<div class="wrap">
+  <div class="display" style="margin-bottom:6px">Дневник</div>
+  <div class="muted" style="margin-bottom:22px">Записи, симптомы, настроение — твоя история</div>
+
+  <div class="card card-gold">
+    <div class="label" style="margin-bottom:10px">Записать симптомы</div>
+    <div class="symp-row" id="journalSymptoms"></div>
+
+    <div class="sep"></div>
+
+    <div class="label" style="margin-bottom:8px">Настроение</div>
+    <div class="symp-row" id="moodRow">
+      <button class="spill" data-m="😊" onclick="pickMood(this)">😊 Отлично</button>
+      <button class="spill" data-m="🙂" onclick="pickMood(this)">🙂 Хорошо</button>
+      <button class="spill" data-m="😐" onclick="pickMood(this)">😐 Нейтрально</button>
+      <button class="spill" data-m="😔" onclick="pickMood(this)">😔 Грустно</button>
+      <button class="spill" data-m="😤" onclick="pickMood(this)">😤 Раздражение</button>
+      <button class="spill" data-m="😰" onclick="pickMood(this)">😰 Тревога</button>
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="fgrid" style="margin:0 0 12px">
+      <div class="field">
+        <label>Сон (часов)</label>
+        <input type="number" id="j-sleep" placeholder="7.5" min="0" max="24" step="0.5">
+      </div>
+      <div class="field">
+        <label>Боль (0–10)</label>
+        <input type="number" id="j-pain" placeholder="0" min="0" max="10">
+      </div>
+    </div>
+
+    <div class="field" style="margin-bottom:12px">
+      <label>Заметка</label>
+      <textarea id="j-note" placeholder="Что произошло? Как себя чувствуешь?"></textarea>
+    </div>
+
+    <button class="btn btn-gold btn-w" onclick="saveJournal()">Сохранить запись</button>
+  </div>
+
+  <div class="card" style="margin-top:10px" id="patternsCard">
+    <div class="label" style="margin-bottom:12px">Паттерны симптомов</div>
+    <div id="patternsContent"><div class="muted">Накопи несколько записей — Véra покажет паттерны</div></div>
+  </div>
+
+  <div id="journalList" style="margin-top:10px"></div>
+
+</div>
+</div>
+
+<!-- ════════ ANALYSIS ════════ -->
+<div class="page" id="page-analysis">
+<div class="wrap">
+  <div class="display" style="margin-bottom:6px">Анализ</div>
+  <div class="muted" style="margin-bottom:22px">Все циклы вместе — луна, цикл, биоритмы, паттерны</div>
+
+  <div class="g3" id="analysisIndicators" style="margin-bottom:10px"></div>
+
+  <div class="analysis-glow" style="margin-bottom:10px">
+    <div class="label" style="margin-bottom:12px">✦ Глубокий анализ</div>
+    <!-- API is hardcoded — no banner needed -->
+    <div id="analysisInsight">
+      <div class="insight-text muted">Нажми кнопку ниже — Véra проведёт полный анализ всех циклов и покажет что сейчас происходит с твоим телом и энергией.</div>
+    </div>
+    <button class="btn btn-gold mt12" onclick="runDeepAnalysis()" id="deepAnalysisBtn">✦ Провести анализ</button>
+  </div>
+
+  <div class="card" style="margin-bottom:10px">
+    <div class="label" style="margin-bottom:16px">Синхронизация циклов — 30 дней</div>
+    <div id="syncChart"></div>
+  </div>
+
+  <div class="label" style="margin-bottom:10px">Спроси Véra</div>
+  <div class="chat-wrap">
+    <div class="chat-messages" id="chatMessages">
+      <div class="cmsg ai">
+        <div class="cav">✦</div>
+        <div class="cbub">Привет! Я Véra — твой персональный помощник. Спрашивай о цикле, самочувствии, биоритмах, толковании карт или просто о том, как себя чувствуешь 🌙</div>
+      </div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-in" id="chatInput" placeholder="Задай вопрос..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="btn btn-gold btn-sm" onclick="sendChat()">→</button>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ════════ SETTINGS ════════ -->
+<div class="page" id="page-settings">
+<div class="wrap">
+  <div class="display" style="margin-bottom:22px">Настройки</div>
+
+  <div class="card card-gold">
+    <div class="label" style="margin-bottom:14px">Профиль</div>
+    <div class="fgrid">
+      <div class="field"><label>Имя</label><input id="s-name" type="text" placeholder="Твоё имя"></div>
+      <div class="field"><label>Дата рождения</label><input id="s-dob" type="date" onchange="syncDob()"></div>
+    </div>
+    <button class="btn btn-gold btn-sm" onclick="saveProfile()">Сохранить</button>
+  </div>
+
+  <div class="card" style="margin-top:10px;border-color:rgba(78,205,196,.15)">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <span style="font-size:22px">✦</span>
+      <div>
+        <div class="label" style="margin-bottom:3px">ИИ-ассистент</div>
+        <div class="muted" style="font-size:12px">Véra работает на Llama 3.3 70B</div>
+      </div>
+      <span style="margin-left:auto;font-size:18px" id="aiStatusDot">⚪</span>
+    </div>
+    <div id="aiTestResult" style="font-size:12px;margin-bottom:10px;display:none;padding:8px 12px;border-radius:8px;background:var(--mid)"></div>
+    <button class="btn btn-ai btn-sm" onclick="testAiConnection()">🧪 Проверить соединение</button>
+  </div>
+
+  <div class="card" style="margin-top:10px">
+    <div class="label" style="margin-bottom:12px">О приложении</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--gold2);margin-bottom:8px">Véra ✦</div>
+    <div class="muted">Твой личный дневник цикла, биоритмов и таро. Все данные хранятся только на твоём устройстве.</div>
+    <div class="sep"></div>
+    <button class="btn btn-ghost btn-sm" onclick="if(confirm('Сбросить все данные?'))resetAll()" style="border-color:rgba(212,120,138,.3);color:var(--rose)">Сбросить данные</button>
+  </div>
+
+</div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="dayModal">
+  <div class="modal">
+    <div class="label" style="margin-bottom:14px" id="dayModalTitle">День</div>
+    <div id="dayModalContent"></div>
+    <div id="dayModalPeriodSection" style="display:none;margin-top:14px">
+      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(212,120,138,.3),transparent);margin-bottom:14px"></div>
+      <div class="label" style="margin-bottom:10px">🌸 Менструация</div>
+      <div id="dayModalPeriodBtns" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+    </div>
+    <button class="btn btn-ghost btn-w mt12" onclick="closeDayModal()">Закрыть</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+// ═══ PWA Service Worker Registration ═════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('data:text/javascript;base64,' + btoa(`
+      self.addEventListener('install', e => {
+        e.waitUntil(self.skipWaiting());
+      });
+      self.addEventListener('activate', e => {
+        e.waitUntil(self.clients.claim());
+      });
+      self.addEventListener('fetch', e => {
+        e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+      });
+    `)).then(reg => {
+      console.log('SW registered:', reg);
+    }).catch(err => {
+      console.log('SW registration failed:', err);
+    });
+  });
+}
+
+// ═══ PWA Install Prompt ══════════════════════════════
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  setTimeout(() => {
+    document.getElementById('installPrompt')?.classList.add('show');
+  }, 3000);
+});
+
+function installPWA() {
+  document.getElementById('installPrompt')?.classList.remove('show');
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice => {
+      if (choice.outcome === 'accepted') {
+        console.log('PWA installed');
+      }
+      deferredPrompt = null;
+    });
+  }
+}
+
+function dismissInstall() {
+  document.getElementById('installPrompt')?.classList.remove('show');
+  localStorage.setItem('vera_install_dismissed', Date.now());
+}
+
+// Hide if dismissed recently
+if (localStorage.getItem('vera_install_dismissed')) {
+  const dismissed = parseInt(localStorage.getItem('vera_install_dismissed'));
+  if (Date.now() - dismissed < 7 * 24 * 60 * 60 * 1000) {
+    document.getElementById('installPrompt')?.classList.remove('show');
+  }
+}
+
+// ═══ STORAGE ═════════════════════════════════════════
+const storage = {
+  async get(key) {
+    try {
+      const val = localStorage.getItem(key);
+      return val !== null ? { value: val } : null;
+    } catch (e) {
+      return null;
+    }
+  },
+  async set(key, value) {
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+};
+
+// ═══ STORAGE KEYS ════════════════════════════════════
+const K = {
+  profile:  'vera_profile',
+  cycle:    'vera_cycle',
+  journal:  'vera_journal',
+  tarot:    'vera_tarot',
+  // apikey: removed — hardcoded
+  today:    'vera_today',
+};
+
+// ═══ STATE ═══════════════════════════════════════════
+let PROFILE  = { name:'', dob:'' };
+let CYCLE    = { last:'', len:28, dur:5, history:[] };
+let JOURNAL  = [];
+let TAROT    = [];
+// API key is in OR_KEY constant below
+let TODAY    = {};
+let selSymptoms = new Set();
+let selMood  = '';
+let calOffset = 0;
+
+// ═══ ALL 78 TAROT CARDS ══════════════════════════════
+const MAJOR = [
+  {n:0,name:'Шут',en:'The Fool',sym:'🃏'},
+  {n:1,name:'Маг',en:'The Magician',sym:'✨'},
+  {n:2,name:'Верховная Жрица',en:'The High Priestess',sym:'🌙'},
+  {n:3,name:'Императрица',en:'The Empress',sym:'🌿'},
+  {n:4,name:'Император',en:'The Emperor',sym:'👑'},
+  {n:5,name:'Иерофант',en:'The Hierophant',sym:'🏛'},
+  {n:6,name:'Влюблённые',en:'The Lovers',sym:'💞'},
+  {n:7,name:'Колесница',en:'The Chariot',sym:'⚡'},
+  {n:8,name:'Сила',en:'Strength',sym:'🦁'},
+  {n:9,name:'Отшельник',en:'The Hermit',sym:'🕯'},
+  {n:10,name:'Колесо Фортуны',en:'Wheel of Fortune',sym:'☯'},
+  {n:11,name:'Справедливость',en:'Justice',sym:'⚖'},
+  {n:12,name:'Повешенный',en:'The Hanged Man',sym:'🔄'},
+  {n:13,name:'Смерть',en:'Death',sym:'🌑'},
+  {n:14,name:'Умеренность',en:'Temperance',sym:'💧'},
+  {n:15,name:'Дьявол',en:'The Devil',sym:'🔗'},
+  {n:16,name:'Башня',en:'The Tower',sym:'⚡'},
+  {n:17,name:'Звезда',en:'The Star',sym:'⭐'},
+  {n:18,name:'Луна',en:'The Moon',sym:'🌕'},
+  {n:19,name:'Солнце',en:'The Sun',sym:'☀️'},
+  {n:20,name:'Суд',en:'Judgement',sym:'🎺'},
+  {n:21,name:'Мир',en:'The World',sym:'🌍'},
+];
+const SUITS = ['Жезлов','Кубков','Мечей','Пентаклей'];
+const MINOR = [];
+SUITS.forEach(s => {
+  ['Туз','2','3','4','5','6','7','8','9','10','Паж','Рыцарь','Королева','Король'].forEach((v,i) => {
+    MINOR.push({ name: (i===0?'Туз ':v+' ') + s, sym: s==='Кубков'?'🏆':s==='Жезлов'?'🔥':s==='Мечей'?'⚔':s==='Пентаклей'?'💰':'🃏' });
+  });
+});
+const ALL_CARDS = [...MAJOR, ...MINOR];
+
+// ═══ SYMPTOMS ════════════════════════════════════════
+const SYMPTOMS = [
+  { id:'migraine',  label:'🤕 Мигрень',    color:'#d4788a' },
+  { id:'headache',  label:'😣 Головная боль', color:'#c46070' },
+  { id:'tired',     label:'😴 Усталость',   color:'#8884a0' },
+  { id:'energy',    label:'⚡ Много сил',   color:'#c9a84c' },
+  { id:'mood_good', label:'😊 Настроение ↑', color:'#4ecdc4' },
+  { id:'mood_bad',  label:'😔 Настроение ↓', color:'#7a6880' },
+  { id:'cramps',    label:'💢 Спазмы',      color:'#d4788a' },
+  { id:'bloating',  label:'🫠 Вздутие',     color:'#a09880' },
+  { id:'insomnia',  label:'🌙 Бессонница',  color:'#6c63cc' },
+  { id:'anxiety',   label:'😰 Тревога',     color:'#9a7890' },
+  { id:'skin',      label:'✨ Кожа ок',     color:'#c9a84c' },
+  { id:'libido',    label:'💕 Либидо ↑',   color:'#e8909a' },
+];
+
+// ═══ MOON CALCULATIONS ═══════════════════════════════
+const MOON_PHASES = [
+  {name:'Новолуние',       sym:'🌑', days:[0,1]},
+  {name:'Растущий серп',   sym:'🌒', days:[2,4]},
+  {name:'Первая четверть', sym:'🌓', days:[5,7]},
+  {name:'Растущая луна',   sym:'🌔', days:[8,10]},
+  {name:'Полнолуние',      sym:'🌕', days:[11,14]},
+  {name:'Убывающая луна',  sym:'🌖', days:[15,17]},
+  {name:'Последняя четверть',sym:'🌗',days:[18,21]},
+  {name:'Убывающий серп',  sym:'🌘', days:[22,27]},
+  {name:'Новолуние',       sym:'🌑', days:[28,29]},
+];
+
+function getMoonDay(date) {
+  const ref = new Date(2025, 0, 29);
+  const diff = Math.floor((date - ref) / 86400000);
+  return ((diff % 29) + 29) % 29;
+}
+
+function getMoonPhase(date) {
+  const day = getMoonDay(date);
+  return MOON_PHASES.find(p => day >= p.days[0] && day <= p.days[1]) || MOON_PHASES[0];
+}
+
+// ═══ BIORHYTHMS ══════════════════════════════════════
+function calcBio(dob, date) {
+  const days = Math.floor((date - dob) / 86400000);
+  return {
+    phys:  Math.sin(2 * Math.PI * days / 23),
+    emot:  Math.sin(2 * Math.PI * days / 28),
+    intel: Math.sin(2 * Math.PI * days / 33),
+  };
+}
+
+// ═══ DATE HELPERS ═══════════════════════════════════
+function parseLocalDate(str) {
+  if (!str) return null;
+  const [y, m, d] = str.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function normalizeDate(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function diffDays(a, b) {
+  const ms = a - b;
+  return Math.floor(ms / 86400000);
+}
+
+function fmtDate(d) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// ═══ CYCLE CALC ══════════════════════════════════════
+function getCycleDay(date) {
+  if (!CYCLE.last) return null;
+  const last = parseLocalDate(CYCLE.last);
+  if (!last) return null;
+  const dateNorm = normalizeDate(date);
+  const lastNorm = normalizeDate(last);
+  const diff = diffDays(dateNorm, lastNorm);
+  if (diff < 0) return null;
+  const cycDay = (diff % CYCLE.len) + 1;
+  return cycDay;
+}
+
+function getCyclePhase(cycDay) {
+  if (!cycDay) return null;
+  if (cycDay <= CYCLE.dur) return { name:'Менструальная', color:'var(--rose)', text:'Время отдыха и восстановления. Снизь нагрузку, слушай тело.' };
+  if (cycDay <= 13) return { name:'Фолликулярная', color:'var(--teal)', text:'Энергия нарастает. Отличное время для новых начинаний и интенсивных тренировок.' };
+  if (cycDay <= 16) return { name:'Овуляция', color:'var(--gold2)', text:'Пик энергии и харизмы. Лучшее время для важных встреч и творчества.' };
+  return { name:'Лютеиновая', color:'var(--mist)', text:'Возможны перепады настроения. Время для рефлексии и мягкой заботы о себе.' };
+}
+
+// ═══ BOOT ════════════════════════════════════════════
+(async function boot() {
+  try { const r = await storage.get(K.profile);  if(r) PROFILE  = JSON.parse(r.value); } catch(e){}
+  try { const r = await storage.get(K.cycle);   if(r) CYCLE    = JSON.parse(r.value); } catch(e){}
+  try { const r = await storage.get(K.journal);  if(r) JOURNAL  = JSON.parse(r.value); } catch(e){}
+  try { const r = await storage.get(K.tarot);    if(r) TAROT    = JSON.parse(r.value); } catch(e){}
+  // API_KEY is hardcoded — no storage load needed
+  try { const r = await storage.get(K.today);    if(r) TODAY    = JSON.parse(r.value); } catch(e){}
+
+  if (!CYCLE.history) CYCLE.history = [];
+
+  applyProfile();
+  buildSymptomPills();
+  buildTarotDatalist();
+  renderToday();
+  renderCycle();
+  renderBio();
+  renderTarotHistory();
+  renderJournal();
+  renderAnalysisIndicators();
+})();
+
+// ═══ PERSIST ═════════════════════════════════════════
+async function save(key, val) {
+  try { await storage.set(key, typeof val === 'string' ? val : JSON.stringify(val)); } catch(e){}
+}
+
+// ═══ NAV ═════════════════════════════════════════════
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+    btn.classList.add('on');
+    document.getElementById('page-' + btn.dataset.p).classList.add('on');
+    if (btn.dataset.p === 'bio') renderBio();
+    if (btn.dataset.p === 'analysis') { renderAnalysisIndicators(); renderSyncChart(); }
+    if (btn.dataset.p === 'journal') renderPatterns();
+  });
+});
+function go(p) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.page').forEach(pg => pg.classList.remove('on'));
+  document.querySelector(`[data-p="${p}"]`).classList.add('on');
+  document.getElementById('page-' + p).classList.add('on');
+}
+
+// ═══ PROFILE ═════════════════════════════════════════
+function applyProfile() {
+  if (PROFILE.name) {
+    const n = document.getElementById('s-name'); if(n) n.value = PROFILE.name;
+    const h = ['Доброе утро','Добрый день','Добрый вечер'];
+    const hr = new Date().getHours();
+    const greet = hr < 12 ? h[0] : hr < 18 ? h[1] : h[2];
+    const el = document.getElementById('todayGreeting');
+    if (el) el.textContent = greet + ', ' + PROFILE.name;
+    const nel = document.getElementById('todayName');
+    if (nel) nel.textContent = '';
+  }
+  if (PROFILE.dob) {
+    const d = document.getElementById('s-dob'); if(d) d.value = PROFILE.dob;
+    const b = document.getElementById('bio-dob'); if(b) { b.value = PROFILE.dob; renderBio(); }
+  }
+  if (CYCLE.last) {
+    const c = document.getElementById('cy-last'); if(c) c.value = CYCLE.last;
+    const l = document.getElementById('cy-len'); if(l) l.value = CYCLE.len;
+    const d = document.getElementById('cy-dur'); if(d) d.value = CYCLE.dur;
+  }
+  // API hardcoded — no key display needed
+  const ib = document.getElementById('insightBtn');
+  if (ib) ib.style.display = 'inline-flex';
+}
+
+function saveProfile() {
+  PROFILE.name = document.getElementById('s-name')?.value.trim() || '';
+  PROFILE.dob  = document.getElementById('s-dob')?.value || '';
+  save(K.profile, PROFILE);
+  applyProfile();
+  toast('✅ Профиль сохранён');
+}
+
+function syncDob() {
+  const v = document.getElementById('s-dob')?.value;
+  const b = document.getElementById('bio-dob');
+  if (b && v) { b.value = v; renderBio(); }
+}
+
+// ═══ TODAY ═══════════════════════════════════════════
+function renderToday() {
+  const now = new Date();
+  const dateEl = document.getElementById('todayDateLabel');
+  if (dateEl) dateEl.textContent = now.toLocaleDateString('ru-RU', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  if (!PROFILE.name) {
+    const g = document.getElementById('todayGreeting');
+    if (g) g.textContent = now.getHours() < 12 ? 'Доброе утро' : now.getHours() < 18 ? 'Добрый день' : 'Добрый вечер';
+  }
+
+  const phase = getMoonPhase(now);
+  setText('todayMoonEmoji', phase.sym);
+  setText('todayMoonName', phase.name);
+  setText('todayMoonDay', (getMoonDay(now) + 1) + ' день лунного цикла');
+  setText('navMoon', phase.sym);
+
+  renderMoonStrip();
+
+  const cycDay = getCycleDay(now);
+  const cycPhase = getCyclePhase(cycDay);
+  if (cycDay) {
+    setText('todayCycleDay', cycDay);
+    setText('todayCyclePhase', cycPhase?.name || '');
+  } else {
+       setText('todayCycleDay', '—');
+    setText('todayCyclePhase', 'Настрой цикл');
+  }
+
+  renderTodayBio();
+
+  const todayStr = fmtDate(now);
+  if (TODAY.date === todayStr) {
+    if (TODAY.symptoms) TODAY.symptoms.forEach(s => selSymptoms.add(s));
+    const es = document.getElementById('energySlider');
+    if (es && TODAY.energy) { es.value = TODAY.energy; updateEnergy(); }
+    const qn = document.getElementById('quickNote');
+    if (qn && TODAY.note) qn.value = TODAY.note;
+    refreshSymptomUi('quickSymptoms');
+  }
+
+  renderTodayTarot();
+}
+
+function renderTodayBio() {
+  const bioCard = document.getElementById('todayBioCard');
+  if (!PROFILE.dob) {
+    if (bioCard) bioCard.style.display = 'none';
+    return;
+  }
+  if (bioCard) bioCard.style.display = 'block';
+  const bio = calcBio(new Date(PROFILE.dob), new Date());
+  const items = [
+    { l:'💪 Физ', v:bio.phys, c:'#d4788a' },
+    { l:'💜 Эмоц', v:bio.emot, c:'#9a80d4' },
+    { l:'🧠 Интел', v:bio.intel, c:'#4ecdc4' },
+  ];
+  const el = document.getElementById('todayBioMini');
+  if (el) el.innerHTML = items.map(i => {
+    const pct = Math.round(i.v * 50 + 50);
+    const vt = (i.v > 0 ? '+' : '') + Math.round(i.v * 100) + '%';
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+      <span style="font-size:11px;min-width:70px;color:var(--mist)">${i.l}</span>
+      <div style="flex:1;height:6px;background:var(--mid);border-radius:3px;position:relative;overflow:hidden">
+        <div style="position:absolute;left:${Math.min(pct,50)}%;width:${Math.abs(pct-50)}%;height:100%;background:${i.c};border-radius:3px;"></div>
+        <div style="position:absolute;left:50%;top:0;width:1px;height:100%;background:var(--border2)"></div>
+      </div>
+      <span style="font-size:11px;min-width:36px;text-align:right;color:${i.c}">${vt}</span>
+    </div>`;
+  }).join('');
+
+  const criticals = [
+    bio.phys < -0.8 ? 'физическая' : null,
+    bio.emot < -0.8 ? 'эмоциональная' : null,
+    bio.intel < -0.8 ? 'интеллектуальная' : null,
+  ].filter(Boolean);
+  const bh = document.getElementById('todayBioHint');
+  if (bh) bh.textContent = criticals.length ? '⚠️ Низкая зона: ' + criticals.join(', ') : '✓ Биоритмы в норме';
+}
+
+function renderTodayTarot() {
+  const today = fmtDate(new Date());
+  const todayCard = TAROT.find(t => t.date === today);
+  const el = document.getElementById('todayTarotContent');
+  if (!el) return;
+  if (todayCard) {
+    el.innerHTML = `<div style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:32px">${todayCard.sym || '🃏'}</div>
+      <div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--gold2)">${todayCard.card}</div>
+        <div style="font-size:11px;color:var(--mist);margin-top:2px">${todayCard.reversed ? 'Перевёрнутая' : 'Прямая'}</div>
+      </div>
+    </div>
+    ${todayCard.interpretation ? `<div style="font-size:12px;color:var(--mist);margin-top:10px;line-height:1.65;font-style:italic">${todayCard.interpretation.slice(0,200)}...</div>` : ''}`;
+  }
+}
+
+function renderMoonStrip() {
+  const el = document.getElementById('moonStrip');
+  if (!el) return;
+  const today = normalizeDate(new Date());
+  let html = '';
+  for (let i = -3; i <= 3; i++) {
+    const d = new Date(today); d.setDate(d.getDate() + i);
+    const ph = getMoonPhase(d);
+    const isToday = i === 0;
+    const lbl = i === 0 ? 'Сег' : i === 1 ? 'Завт' : d.toLocaleDateString('ru-RU',{weekday:'short'});
+    html += `<div class="moon-day${isToday?' today':''}">
+      <div class="mico">${ph.sym}</div>
+      <div>${lbl}</div>
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
+function updateEnergy() {
+  const v = document.getElementById('energySlider')?.value;
+  setText('energyVal', v);
+}
+
+// ═══ QUICK SYMPTOMS ══════════════════════════════════
+function buildSymptomPills() {
+  ['quickSymptoms','journalSymptoms'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = SYMPTOMS.map(s =>
+      `<button class="spill" data-id="${s.id}" onclick="toggleSymptom('${s.id}','${id}')">${s.label}</button>`
+    ).join('');
+  });
+}
+
+function toggleSymptom(id, containerId) {
+  if (selSymptoms.has(id)) selSymptoms.delete(id);
+  else selSymptoms.add(id);
+  refreshSymptomUi(containerId);
+}
+
+function refreshSymptomUi(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.querySelectorAll('.spill[data-id]').forEach(btn => {
+    btn.classList.toggle('on', selSymptoms.has(btn.dataset.id));
+  });
+}
+
+function pickMood(btn) {
+  document.querySelectorAll('#moodRow .spill').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  selMood = btn.dataset.m;
+}
+
+async function saveToday() {
+  TODAY = {
+    date: fmtDate(new Date()),
+    symptoms: [...selSymptoms],
+    energy: parseInt(document.getElementById('energySlider')?.value || 5),
+    note: document.getElementById('quickNote')?.value.trim() || '',
+  };
+  await save(K.today, TODAY);
+  toast('✅ День сохранён');
+}
+
+// ═══ CYCLE ═══════════════════════════════════════════
+let calYear, calMonth;
+
+function renderCycle() {
+  const now = new Date();
+  if (calYear === undefined) { calYear = now.getFullYear(); calMonth = now.getMonth(); }
+
+  const lbl = document.getElementById('calMonthLabel');
+  if (lbl) lbl.textContent = new Date(calYear, calMonth).toLocaleDateString('ru-RU', {month:'long', year:'numeric'});
+
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const firstDow = (new Date(calYear, calMonth, 1).getDay() + 6) % 7;
+  const grid = document.getElementById('calGrid');
+  if (!grid) return;
+
+  let html = '';
+  for (let i = 0; i < firstDow; i++) html += '<div></div>';
+  
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dt = new Date(calYear, calMonth, d);
+    const isToday = d === now.getDate() && calMonth === now.getMonth() && calYear === now.getFullYear();
+    const cycDay = getCycleDay(dt);
+    const isPeriod = cycDay && cycDay <= CYCLE.dur;
+    const isFertile = cycDay && cycDay >= CYCLE.len - 18 && cycDay <= CYCLE.len - 13;
+    const isOvul = cycDay && cycDay === CYCLE.len - 14;
+    const hasNote = JOURNAL.some(e => e.date === fmtDate(dt));
+    const isHistStart = (CYCLE.history || []).some(h => h.start === fmtDate(dt));
+    
+    let cls = 'cday';
+    if (isPeriod) cls += ' period';
+    else if (isOvul) cls += ' ovulation';
+    else if (isFertile) cls += ' fertile';
+    if (isHistStart && !isPeriod) cls += ' period';
+    if (isToday) cls += ' today';
+    if (hasNote) cls += ' has-note';
+    
+    html += `<div class="${cls}" onclick="openDay('${fmtDate(dt)}')">${d}</div>`;
+  }
+  grid.innerHTML = html;
+
+  if (CYCLE.last) {
+    const todayCycDay = getCycleDay(now) || 1;
+    const dToNext = CYCLE.len - todayCycDay + 1;
+    setText('cy-next', dToNext <= 0 ? 'Сейчас' : 'через ' + dToNext + ' дн.');
+    const nextDate = new Date(now); nextDate.setDate(nextDate.getDate() + dToNext);
+    setText('cy-nextsub', nextDate.toLocaleDateString('ru-RU', {day:'numeric',month:'long'}));
+
+    const dToFert = CYCLE.len - 18 - todayCycDay + 1;
+    setText('cy-fertile', dToFert <= 0 ? 'Сейчас' : 'через ' + dToFert + ' дн.');
+    const fertDate = new Date(now); fertDate.setDate(fertDate.getDate() + Math.max(0, dToFert));
+    setText('cy-fertsub', fertDate.toLocaleDateString('ru-RU', {day:'numeric',month:'long'}));
+  }
+
+  const phase = getCyclePhase(getCycleDay(now));
+  const pc = document.getElementById('cyclePhaseCard');
+  if (pc && phase) {
+    pc.innerHTML = `<div class="flex gap8" style="margin-bottom:8px">
+      <span class="tag" style="background:rgba(255,255,255,.05);border:1px solid var(--border2);color:${phase.color}">${phase.name}</span>
+      <span class="muted" style="font-size:12px">${getCycleDay(now)} день цикла</span>
+    </div>
+    <div class="muted">${phase.text}</div>`;
+  } else if (pc) {
+    pc.innerHTML = '<div class="muted">Укажи начало последнего цикла для отображения фазы</div>';
+  }
+}
+
+function changeMonth(dir) {
+  calMonth += dir;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCycle();
+}
+
+function saveCycleSettings() {
+  CYCLE.last = document.getElementById('cy-last')?.value || '';
+  CYCLE.len = parseInt(document.getElementById('cy-len')?.value || 28);
+  CYCLE.dur = parseInt(document.getElementById('cy-dur')?.value || 5);
+  save(K.cycle, CYCLE);
+  renderCycle();
+  renderToday();
+  toast('✅ Цикл обновлён');
+}
+
+function openDay(dateStr) {
+  const entries = JOURNAL.filter(e => e.date === dateStr);
+  const dt = parseLocalDate(dateStr);
+  const cycDay = getCycleDay(dt);
+  const moonPh = getMoonPhase(dt);
+  
+  const isCurrentPeriodStart = CYCLE.last === dateStr;
+  const isHistoryStart = (CYCLE.history || []).some(h => h.start === dateStr);
+
+  const title = document.getElementById('dayModalTitle');
+  const content = document.getElementById('dayModalContent');
+  if (!title || !content) return;
+  
+  title.textContent = dt.toLocaleDateString('ru-RU', {day:'numeric', month:'long', weekday:'long'});
+
+  let html = `<div class="flex gap8 wrap-flex" style="margin-bottom:14px">
+    <span class="tag tag-mist">${moonPh.sym} ${moonPh.name}</span>
+    ${cycDay ? `<span class="tag tag-rose">${cycDay} день цикла</span>` : ''}
+  </div>`;
+
+  if (entries.length) {
+    entries.forEach(e => {
+      html += `<div class="entry">
+        ${e.mood ? `<div style="font-size:22px;margin-bottom:8px">${e.mood}</div>` : ''}
+        ${e.note ? `<div class="muted">${e.note}</div>` : ''}
+        <div class="entry-pills">
+          ${(e.symptoms || []).map(s => { const sym = SYMPTOMS.find(x => x.id === s); return sym ? `<span class="epill">${sym.label}</span>` : ''; }).join('')}
+          ${e.sleep ? `<span class="epill">🌙 ${e.sleep}ч</span>` : ''}
+          ${e.pain ? `<span class="epill">💢 боль ${e.pain}/10</span>` : ''}
+        </div>
+      </div>`;
+    });
+  } else {
+    html += '<div class="muted" style="font-style:italic;margin-bottom:4px">Записей в этот день нет</div>';
+  }
+  content.innerHTML = html;
+
+  const periodSection = document.getElementById('dayModalPeriodSection');
+  const periodBtns = document.getElementById('dayModalPeriodBtns');
+  if (periodSection && periodBtns) {
+    periodSection.style.display = 'block';
+
+    if (isCurrentPeriodStart) {
+      periodBtns.innerHTML = `
+        <div style="width:100%;padding:10px 14px;background:rgba(212,120,138,.1);border:1px solid rgba(212,120,138,.25);border-radius:10px;display:flex;align-items:center;gap:10px;font-size:13px">
+          <span style="font-size:18px">🌸</span>
+          <span style="color:var(--rose)">Начало цикла отмечено в этот день</span>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="clearPeriodStart()" style="border-color:rgba(212,120,138,.3);color:var(--rose);width:100%;margin-top:4px">Убрать отметку</button>`;
+    } else {
+      const today = normalizeDate(new Date());
+      const isFuture = normalizeDate(dt) > today;
+      
+      periodBtns.innerHTML = `
+        <button class="btn btn-rose btn-w" onclick="setPeriodStart('${dateStr}')" ${isFuture ? 'disabled style="opacity:.4;cursor:not-allowed"' : ''}>
+          🩸 Начались месячные в этот день
+        </button>
+        ${CYCLE.last ? `<div style="font-size:11px;color:var(--fog);width:100%;text-align:center;margin-top:4px">Текущий цикл начался: ${parseLocalDate(CYCLE.last).toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</div>` : ''}
+        ${isHistoryStart ? `<div style="width:100%;padding:8px 14px;background:rgba(160,152,128,.08);border:1px solid rgba(160,152,128,.2);border-radius:10px;margin-top:6px;font-size:12px;color:var(--mist);display:flex;align-items:center;gap:8px"><span>📁</span><span>Начало прошлого цикла (в истории)</span></div>` : ''}`;
+    }
+  }
+
+  document.getElementById('dayModal').classList.add('on');
+}
+
+function setPeriodStart(dateStr) {
+  if (!CYCLE.history) CYCLE.history = [];
+
+  if (CYCLE.last && CYCLE.last !== dateStr) {
+    // Считаем фактическую длину прошлого цикла
+    const prevStart = parseLocalDate(CYCLE.last);
+    const newStart  = parseLocalDate(dateStr);
+    const actualLen = diffDays(newStart, prevStart);
+
+    // Сохраняем прошлый цикл в историю с реальной длиной
+    const exists = CYCLE.history.some(h => h.start === CYCLE.last);
+    if (!exists && actualLen > 0) {
+      CYCLE.history.push({ start: CYCLE.last, len: actualLen });
+    }
+
+    // Пересчитываем среднюю длину цикла по истории (не более 6 последних)
+    const allLens = CYCLE.history
+      .map(h => h.len)
+      .filter(l => l && l >= 18 && l <= 60); // защита от мусора
+    if (allLens.length > 0) {
+      const recent = allLens.slice(-6);
+      const avg = Math.round(recent.reduce((a, b) => a + b, 0) / recent.length);
+      CYCLE.len = avg;
+      // Обновляем поле в UI если видно
+      const lenEl = document.getElementById('cy-len');
+      if (lenEl) lenEl.value = avg;
+    }
+  }
+
+  CYCLE.last = dateStr;
+
+  save(K.cycle, CYCLE);
+  closeDayModal();
+  renderCycle();
+  renderToday();
+
+  const dt = parseLocalDate(dateStr);
+  const newLen = CYCLE.len;
+  toast('🌸 Начало цикла: ' + dt.toLocaleDateString('ru-RU', {day:'numeric', month:'long'}) + ' · цикл ' + newLen + ' дн.');
+}
+
+function clearPeriodStart() {
+  if (CYCLE.history && CYCLE.history.length > 0) {
+    CYCLE.history.sort((a, b) => new Date(b.start) - new Date(a.start));
+    const prev = CYCLE.history.shift();
+    CYCLE.last = prev.start;
+  } else {
+    CYCLE.last = '';
+  }
+  
+  save(K.cycle, CYCLE);
+  closeDayModal();
+  renderCycle();
+  renderToday();
+  
+  toast(CYCLE.last ? '↩ Восстановлен предыдущий цикл' : 'Отметка убрана');
+}
+
+function closeDayModal() { 
+  document.getElementById('dayModal').classList.remove('on'); 
+}
+
+document.getElementById('dayModal').addEventListener('click', function(e) { 
+  if (e.target === this) closeDayModal(); 
+});
+
+// ═══ BIORHYTHMS ══════════════════════════════════════
+function renderBio() {
+  const dobEl = document.getElementById('bio-dob');
+  const res = document.getElementById('bioResult');
+  const emp = document.getElementById('bioEmpty');
+  if (!dobEl?.value) { if(res) res.style.display='none'; if(emp) emp.style.display='block'; return; }
+  if(res) res.style.display='block'; if(emp) emp.style.display='none';
+
+  const dob = new Date(dobEl.value);
+  const now = new Date();
+  const bio = calcBio(dob, now);
+
+  const items = [
+    { l:'💪 Физический', v:bio.phys, c:'#d4788a', p:23 },
+    { l:'💜 Эмоциональный', v:bio.emot, c:'#9a80d4', p:28 },
+    { l:'🧠 Интеллектуальный', v:bio.intel, c:'#4ecdc4', p:33 },
+  ];
+
+  const bb = document.getElementById('bioBars');
+  if (bb) bb.innerHTML = items.map(i => {
+    const pct = Math.round(i.v * 50 + 50);
+    const vt = (i.v > 0 ? '+' : '') + Math.round(i.v * 100) + '%';
+    const isCrit = Math.abs(i.v) < 0.15;
+    return `<div class="bio-row">
+      <div class="bio-label">${i.l}</div>
+      <div class="bio-track">
+        <div class="bio-zero"></div>
+        <div class="bio-fill" style="left:${Math.min(pct,50)}%;width:${Math.abs(pct-50)}%;background:${isCrit?'var(--gold)':i.c}"></div>
+      </div>
+      <div class="bio-val" style="color:${isCrit?'var(--gold)':i.c}">${vt}</div>
+    </div>
+    ${isCrit ? `<div style="font-size:10px;color:var(--gold);margin:-8px 0 8px 94px;letter-spacing:.05em">⚠ КРИТИЧЕСКИЙ ДЕНЬ</div>` : ''}`;
+  }).join('');
+
+  const wk = document.getElementById('bioWeek');
+  if (wk) {
+    wk.innerHTML = Array.from({length:7}, (_,i) => {
+      const fd = new Date(now); fd.setDate(fd.getDate() + i - 3);
+      const b = calcBio(dob, fd);
+      const avg3 = (b.phys + b.emot + b.intel) / 3;
+      const c = avg3 > 0.3 ? 'var(--teal)' : avg3 < -0.3 ? 'var(--rose)' : 'var(--gold)';
+      const lbl = i===3 ? 'Сег' : fd.toLocaleDateString('ru-RU',{weekday:'short'});
+      return `<div class="bw-day${i===3?' today':''}">
+        <div class="bw-lbl">${lbl}</div>
+        <div class="bw-val" style="color:${c}">${avg3>0?'+':''}${Math.round(avg3*100)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  const adv = document.getElementById('bioAdviceCard');
+  if (adv) {
+    const criticals = items.filter(i => Math.abs(i.v) < 0.15).map(i => i.l.split(' ')[1]);
+    const highs = items.filter(i => i.v > 0.6).map(i => i.l.split(' ')[1]);
+    let html = '';
+    if (criticals.length) html += `<div style="background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:14px;margin-bottom:8px"><strong style="color:var(--gold2)">⚠ Критические дни</strong><p class="muted" style="margin-top:5px">Сферы: ${criticals.join(', ')}. Повышен риск ошибок. Будь внимательна.</p></div>`;
+    if (highs.length) html += `<div style="background:rgba(78,205,196,.06);border:1px solid rgba(78,205,196,.18);border-radius:12px;padding:14px;margin-bottom:8px"><strong style="color:var(--teal)">✨ Пик энергии</strong><p class="muted" style="margin-top:5px">${highs.join(', ')} — используй потенциал!</p></div>`;
+    if (!html) html = `<div style="background:var(--soft);border:1px solid var(--border);border-radius:12px;padding:14px"><strong>Стабильный период</strong><p class="muted" style="margin-top:5px">Биоритмы в среднем диапазоне. Хорошее время для планомерной работы.</p></div>`;
+    adv.innerHTML = html;
+  }
+}
+
+// ═══ TAROT ═══════════════════════════════════════════
+function buildTarotDatalist() {
+  const dl = document.getElementById('tarotList');
+  if (!dl) return;
+  dl.innerHTML = ALL_CARDS.map(c => `<option value="${c.name}">`).join('');
+}
+
+async function interpretCard() {
+  const name = document.getElementById('tarotInput')?.value.trim();
+  if (!name) { toast('⚠️ Введи название карты'); return; }
+  const reversed = document.getElementById('tarotReversed')?.value === 'reversed';
+  const question = document.getElementById('tarotQuestion')?.value.trim() || '';
+
+  const card = ALL_CARDS.find(c => c.name.toLowerCase() === name.toLowerCase()) || { name, sym:'🃏' };
+  const today = fmtDate(new Date());
+
+  const display = document.getElementById('tarotCardDisplay');
+  if (display) display.innerHTML = `
+    <div class="tarot-symbol">${card.sym}</div>
+    <div class="tarot-num">${card.n !== undefined ? 'АРКАН ' + card.n : 'МЛАДШИЙ АРКАН'}</div>
+    <div class="tarot-name-big">${card.name}${reversed ? ' (перевёрнутая)' : ''}</div>
+    ${question ? `<div class="muted" style="font-size:12px;margin-top:8px;font-style:italic">"${question}"</div>` : ''}
+  `;
+
+  const resultEl = document.getElementById('tarotResult');
+  if (resultEl) resultEl.style.display = 'block';
+
+  const interpEl = document.getElementById('tarotInterpText');
+  if (interpEl) interpEl.innerHTML = '<div class="dot-pulse"><span></span><span></span><span></span></div>';
+
+  let interpretation = '';
+  if (API_KEY) {
+    const cycDay = getCycleDay(new Date());
+    const moonPh = getMoonPhase(new Date());
+    const bioStr = PROFILE.dob ? (() => {
+      const b = calcBio(new Date(PROFILE.dob), new Date());
+      return `Биоритмы: физ ${Math.round(b.phys*100)}%, эмоц ${Math.round(b.emot*100)}%, интел ${Math.round(b.intel*100)}%`;
+    })() : '';
+
+    const prompt = `Ты Véra — мистический ИИ-помощник для женщин. Дай поэтическое, но практичное толкование карты Таро.
+
+Карта: ${card.name} ${reversed ? '(перевёрнутая)' : '(прямая)'}
+${question ? 'Вопрос пользователя: ' + question : ''}
+${cycDay ? 'День цикла: ' + cycDay + ' (' + getCyclePhase(cycDay)?.name + ')' : ''}
+Луна: ${moonPh.name}
+${bioStr}
+
+Дай толкование в 3–4 абзацах: сначала суть карты сегодня, затем как она связана с текущим состоянием (цикл, луна, биоритмы если есть), и конкретный совет или вопрос для рефлексии. Говори тепло, как мудрая подруга. Без мистического жаргона.`;
+
+    interpretation = await callAI(prompt, 600) || 'Не удалось получить толкование.';
+  } else {
+    interpretation = getFallbackInterpretation(card, reversed);
+  }
+
+  if (interpEl) interpEl.innerHTML = interpretation.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+  const entry = { id:Date.now(), date:today, card:card.name, sym:card.sym, reversed, question, interpretation };
+  TAROT = TAROT.filter(t => t.date !== today);
+  TAROT.unshift(entry);
+  await save(K.tarot, TAROT);
+  renderTarotHistory();
+  renderTodayTarot();
+  toast('✅ Карта сохранена');
+}
+
+function getFallbackInterpretation(card, reversed) {
+  const fallbacks = {
+    'Луна': 'Луна говорит о тайнах, интуиции и том, что скрыто под поверхностью. Сегодня доверяй внутреннему голосу больше, чем логике.',
+    'Солнце': 'Энергия, радость и ясность. Прекрасный день чтобы начать что-то важное или просто позволить себе быть счастливой.',
+    'Звезда': 'После трудностей приходит надежда. Это карта восстановления и веры в лучшее. Ты на верном пути.',
+  };
+  const base = fallbacks[card.name] || `${card.name} — мощная карта, несущая важное послание. Обрати внимание на то, что сегодня притягивает твоё внимание.`;
+  return (reversed ? 'Перевёрнутое положение предлагает взглянуть внутрь. ' : '') + base + '\n\n(Для персонального толкования с учётом цикла и биоритмов добавь API ключ в Настройках)';
+}
+
+function renderTarotHistory() {
+  const el = document.getElementById('tarotHistory');
+  if (!el) return;
+  if (!TAROT.length) { el.innerHTML = '<div class="muted">История пуста</div>'; return; }
+  el.innerHTML = TAROT.slice(0,7).map(t => {
+    const d = parseLocalDate(t.date);
+    const isToday = t.date === fmtDate(new Date());
+    return `<div class="entry">
+      <div class="entry-head">
+        <span style="font-size:12px;color:var(--mist)">${d.toLocaleDateString('ru-RU',{day:'numeric',month:'short',weekday:'short'})}</span>
+        ${isToday ? '<span class="tag tag-gold" style="font-size:10px">Сегодня</span>' : ''}
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:24px">${t.sym||'🃏'}</span>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;color:var(--gold2)">${t.card}${t.reversed?' ↙️':''}</div>
+          ${t.interpretation ? `<div style="font-size:11px;color:var(--mist);margin-top:3px;line-height:1.5">${t.interpretation.slice(0,120)}...</div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ JOURNAL ═════════════════════════════════════════
+async function saveJournal() {
+  const now = new Date();
+  const entry = {
+    id: Date.now(),
+    date: fmtDate(now),
+    symptoms: [...selSymptoms],
+    mood: selMood,
+    sleep: parseFloat(document.getElementById('j-sleep')?.value) || null,
+    pain: parseInt(document.getElementById('j-pain')?.value) || null,
+    note: document.getElementById('j-note')?.value.trim() || '',
+    cycleDay: getCycleDay(now),
+    moonPhase: getMoonPhase(now).name,
+    bio: PROFILE.dob ? calcBio(new Date(PROFILE.dob), now) : null,
+  };
+  JOURNAL.unshift(entry);
+  await save(K.journal, JOURNAL);
+  renderJournal();
+  renderPatterns();
+  renderCycle();
+
+  selSymptoms.clear(); selMood = '';
+  buildSymptomPills();
+  document.querySelectorAll('#moodRow .spill').forEach(b => b.classList.remove('on'));
+  ['j-sleep','j-pain','j-note'].forEach(id => { const e = document.getElementById(id); if(e) e.value = ''; });
+  toast('✅ Запись сохранена');
+}
+
+function renderJournal() {
+  const el = document.getElementById('journalList');
+  if (!el) return;
+  if (!JOURNAL.length) { el.innerHTML = '<div class="muted" style="text-align:center;padding:20px">Записей пока нет</div>'; return; }
+  el.innerHTML = JOURNAL.slice(0,20).map(e => {
+    const d = parseLocalDate(e.date);
+    const ph = getMoonPhase(d);
+    return `<div class="entry">
+      <div class="entry-head">
+        <span style="font-size:12px;color:var(--mist)">${d.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'short'})}</span>
+        <span>${e.mood||''}</span>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
+        <span class="tag tag-mist">${ph.sym} ${e.moonPhase||ph.name}</span>
+        ${e.cycleDay ? `<span class="tag tag-rose">${e.cycleDay} д.ц.</span>` : ''}
+      </div>
+      ${e.note ? `<div class="muted" style="font-size:13px">${e.note}</div>` : ''}
+      <div class="entry-pills">
+        ${(e.symptoms||[]).map(s => { const sym = SYMPTOMS.find(x=>x.id===s); return sym?`<span class="epill">${sym.label}</span>`:''; }).join('')}
+        ${e.sleep?`<span class="epill">🌙 ${e.sleep}ч</span>`:''}
+        ${e.pain?`<span class="epill">💢 ${e.pain}/10</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderPatterns() {
+  const el = document.getElementById('patternsContent');
+  if (!el || JOURNAL.length < 5) return;
+  const counts = {};
+  JOURNAL.forEach(e => (e.symptoms||[]).forEach(s => { counts[s] = (counts[s]||0) + 1; }));
+  const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,6);
+  if (!sorted.length) return;
+  const max = sorted[0][1];
+  el.innerHTML = sorted.map(([id, cnt]) => {
+    const sym = SYMPTOMS.find(s => s.id === id);
+    const pct = Math.round(cnt / max * 100);
+    const days = JOURNAL.filter(e => e.symptoms?.includes(id) && e.cycleDay).map(e => e.cycleDay);
+    const avgDay = days.length ? Math.round(days.reduce((a,b)=>a+b,0)/days.length) : null;
+    return `<div class="pattern-row">
+      <span style="min-width:120px;font-size:12px">${sym?.label||id}</span>
+      <div class="pattern-bar"><div class="pattern-fill" style="width:${pct}%"></div></div>
+      <span style="min-width:28px;font-size:11px;color:var(--mist)">${cnt}×</span>
+      ${avgDay ? `<span style="font-size:10px;color:var(--fog)">~${avgDay}д.ц.</span>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ═══ ANALYSIS ════════════════════════════════════════
+function renderAnalysisIndicators() {
+  const el = document.getElementById('analysisIndicators');
+  if (!el) return;
+  const now = new Date();
+  const moonPh = getMoonPhase(now);
+  const cycDay = getCycleDay(now);
+  const phase = getCyclePhase(cycDay);
+  const bio = PROFILE.dob ? calcBio(new Date(PROFILE.dob), now) : null;
+  const avgBio = bio ? ((bio.phys + bio.emot + bio.intel) / 3) : null;
+
+  el.innerHTML = [
+    { ico:moonPh.sym, lbl:'Луна', val:moonPh.name, sub:(getMoonDay(now)+1)+' день', c:'var(--gold2)' },
+    { ico:'🌸', lbl:'Цикл', val:cycDay ? cycDay+' день' : '—', sub:phase?.name||'Настрой цикл', c:'var(--rose)' },
+    { ico:'🌊', lbl:'Биоритмы', val:avgBio !== null ? (avgBio>0?'+':'')+Math.round(avgBio*100)+'%' : '—', sub:avgBio!==null?(avgBio>0.3?'Подъём':avgBio<-0.3?'Спад':'Норма'):'Укажи д.р.', c:'var(--teal)' },
+  ].map(i => `<div class="card card-sm center">
+    <div style="font-size:26px;margin-bottom:6px">${i.ico}</div>
+    <div class="label" style="margin-bottom:4px">${i.lbl}</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:${i.c}">${i.val}</div>
+    <div class="muted" style="font-size:11px;margin-top:2px">${i.sub}</div>
+  </div>`).join('');
+
+  const banner = document.getElementById('analysisApiKeyBanner');
+  if (banner) banner.style.display = API_KEY ? 'none' : 'block';
+}
+
+function renderSyncChart() {
+  const el = document.getElementById('syncChart');
+  if (!el) return;
+  const now = new Date();
+  const days = 30;
+  const dobDate = PROFILE.dob ? new Date(PROFILE.dob) : null;
+
+  let rows = '';
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now); d.setDate(d.getDate() - i);
+    const moonDay = getMoonDay(d);
+    const moonPct = moonDay / 29 * 100;
+    const cycDay2 = getCycleDay(d);
+    const cycPct = cycDay2 ? (cycDay2 / CYCLE.len * 100) : 0;
+    const bio = dobDate ? calcBio(dobDate, d) : null;
+    const avgBio2 = bio ? (bio.phys + bio.emot + bio.intel) / 3 : 0;
+    const bioPct = (avgBio2 + 1) / 2 * 100;
+    const isToday = i === 0;
+
+    rows += `<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;${isToday?'background:var(--soft);border-radius:6px;padding:2px 4px':''}">
+      <span style="font-size:9px;min-width:24px;color:var(--fog)">${d.getDate()}</span>
+      <div style="flex:1;height:4px;background:var(--mid);border-radius:2px;overflow:hidden">
+        <div style="width:${moonPct}%;height:100%;background:var(--gold);opacity:.6;border-radius:2px"></div>
+      </div>
+      <div style="flex:1;height:4px;background:var(--mid);border-radius:2px;overflow:hidden">
+        <div style="width:${cycPct}%;height:100%;background:var(--rose);opacity:.7;border-radius:2px"></div>
+      </div>
+      ${dobDate ? `<div style="flex:1;height:4px;background:var(--mid);border-radius:2px;overflow:hidden">
+        <div style="width:${bioPct}%;height:100%;background:var(--teal);opacity:.6;border-radius:2px"></div>
+      </div>` : ''}
+    </div>`;
+  }
+
+  el.innerHTML = `<div style="display:flex;gap:4px;font-size:10px;color:var(--fog);margin-bottom:8px">
+    <span style="min-width:28px"></span>
+    <span style="flex:1">🌙 Луна</span>
+    <span style="flex:1">🌸 Цикл</span>
+    ${dobDate ? '<span style="flex:1">🌊 Биоритм</span>' : ''}
+  </div>${rows}`;
+}
+
+async function runDeepAnalysis() {
+  const el = document.getElementById('analysisInsight');
+  if (el) el.innerHTML = '<div class="dot-pulse"><span></span><span></span><span></span></div>';
+
+  const now = new Date();
+  const moonPh = getMoonPhase(now);
+  const cycDay = getCycleDay(now);
+  const phase = getCyclePhase(cycDay);
+  const bio = PROFILE.dob ? calcBio(new Date(PROFILE.dob), now) : null;
+  const recentSymptoms = JOURNAL.slice(0,7).flatMap(e => e.symptoms||[]);
+  const symptomCounts = {};
+  recentSymptoms.forEach(s => symptomCounts[s] = (symptomCounts[s]||0)+1);
+  const topSymptoms = Object.entries(symptomCounts).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([id]) => SYMPTOMS.find(s=>s.id===id)?.label||id);
+  const todayTarot = TAROT.find(t => t.date === fmtDate(now));
+
+  const prompt = `Ты Véra — персональный ИИ-помощник для женщин. Проведи глубокий ежедневный анализ для пользователя.
+
+ДАННЫЕ СЕГОДНЯ:
+- Луна: ${moonPh.name} (${getMoonDay(now)+1} день лунного цикла)
+- Менструальный цикл: ${cycDay ? cycDay + ' день, фаза: ' + phase?.name : 'не настроен'}
+- Биоритмы: ${bio ? `физ ${Math.round(bio.phys*100)}%, эмоц ${Math.round(bio.emot*100)}%, интел ${Math.round(bio.intel*100)}%` : 'не указана д.р.'}
+- Частые симптомы за 7 дней: ${topSymptoms.join(', ') || 'нет данных'}
+- Карта дня: ${todayTarot ? todayTarot.card + (todayTarot.reversed?' (перевёрнутая)':'') : 'не выбрана'}
+
+Напиши анализ в 4 частях:
+1. **Синхронизация циклов** — как луна, цикл и биоритмы взаимодействуют сегодня
+2. **Тело и энергия** — что ожидать физически и эмоционально
+3. **Совет на день** — конкретно, тепло, практично
+4. **На что обратить внимание** — один важный момент
+
+Говори как мудрая, тёплая подруга. Не более 350 слов.`;
+
+  const result = await callAI(prompt, 800);
+  if (el) el.innerHTML = (result || 'Не удалось провести анализ').replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+}
+
+async function generateDailyInsight() {
+  const el = document.getElementById('todayInsightContent');
+  if (el) el.innerHTML = '<div class="dot-pulse"><span></span><span></span><span></span></div>';
+
+  const now = new Date();
+  const moonPh = getMoonPhase(now);
+  const cycDay = getCycleDay(now);
+  const phase = getCyclePhase(cycDay);
+  const bio = PROFILE.dob ? calcBio(new Date(PROFILE.dob), now) : null;
+
+  const prompt = `Ты Véra. Напиши короткую утреннюю сводку (2–3 предложения) для ${PROFILE.name||'пользователя'}.
+
+Луна: ${moonPh.name}. Цикл: ${cycDay ? cycDay+' день, '+phase?.name : 'не настроен'}. ${bio ? `Биоритмы: общий ${Math.round(((bio.phys+bio.emot+bio.intel)/3)*100)}%` : ''}
+
+Тепло, конкретно, без мистики. Один ключевой совет на день.`;
+
+  const result = await callAI(prompt, 200);
+  if (el) el.innerHTML = `<div class="insight-text">${(result||'').replace(/\n/g,'<br>')}</div>`;
+}
+
+// ═══ AI CHAT ══════════════════════════════════════════
+async function sendChat() {
+  const inp = document.getElementById('chatInput');
+  const txt = inp?.value.trim();
+  if (!txt) return;
+  inp.value = '';
+
+
+  addChatMsg('user', txt);
+  const tid = addTyping();
+
+  const now = new Date();
+  const moonPh = getMoonPhase(now);
+  const cycDay = getCycleDay(now);
+  const phase = getCyclePhase(cycDay);
+  const bio = PROFILE.dob ? calcBio(new Date(PROFILE.dob), now) : null;
+
+  const system = `Ты Véra — тёплый, мудрый ИИ-помощник для женщин. Говоришь по-русски. Отвечаешь на вопросы о самочувствии, цикле, биоритмах, картах Таро.
+
+Контекст пользователя:
+- Имя: ${PROFILE.name||'не указано'}
+- Луна: ${moonPh.name}, ${getMoonDay(now)+1} день
+- Цикл: ${cycDay ? cycDay+' день, '+phase?.name : 'не настроен'}
+- Биоритмы: ${bio ? `физ ${Math.round(bio.phys*100)}%, эмоц ${Math.round(bio.emot*100)}%, интел ${Math.round(bio.intel*100)}%` : 'не настроены'}
+- Записей в дневнике: ${JOURNAL.length}
+
+Отвечай тепло, конкретно, до 150 слов.`;
+
+  const result = await callAI(txt, 400, system);
+  removeTyping(tid);
+  addChatMsg('ai', result || '😔 Не удалось получить ответ. Проверь интернет-соединение.');
+}
+
+function addChatMsg(role, text) {
+  const box = document.getElementById('chatMessages');
+  if (!box) return;
+  const div = document.createElement('div');
+  div.className = 'cmsg ' + role;
+  div.innerHTML = `<div class="cav">${role==='ai'?'✦':'🌸'}</div><div class="cbub">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function addTyping() {
+  const id = 'typ' + Date.now();
+  const box = document.getElementById('chatMessages');
+  if (!box) return id;
+  const div = document.createElement('div');
+  div.className = 'cmsg ai'; div.id = id;
+  div.innerHTML = `<div class="cav">✦</div><div class="cbub"><div class="dot-pulse"><span></span><span></span><span></span></div></div>`;
+  box.appendChild(div); box.scrollTop = box.scrollHeight;
+  return id;
+}
+
+function removeTyping(id) { 
+  document.getElementById(id)?.remove(); 
+}
+
+// ═══ AI API CALL (OpenRouter via corsproxy.io) ══════
+const OR_KEY = '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';
+const OR_URL = 'https://corsproxy.io/?url=' + encodeURIComponent('https://openrouter.ai/api/v1/chat/completions');
+
+async function callAI(prompt, maxTokens = 500, systemOverride = null) {
+  try {
+    const messages = [];
+    if (systemOverride) messages.push({ role: 'system', content: systemOverride });
+    messages.push({ role: 'user', content: prompt });
+
+    const res = await fetch(OR_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + OR_KEY,
+      },
+      body: JSON.stringify({
+        model: 'meta-llama/llama-3.3-70b-instruct:free',
+        max_tokens: maxTokens,
+        messages: messages
+      })
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error('OR error:', res.status, errText);
+      toast('⚠️ ИИ: ошибка ' + res.status);
+      return null;
+    }
+
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content;
+    if (!text) {
+      console.error('OR empty:', JSON.stringify(data));
+      return null;
+    }
+    return text;
+  } catch (e) {
+    console.error('callAI:', e);
+    toast('⚠️ Нет связи: ' + e.message);
+    return null;
+  }
+}
+
+
+
+// ═══ AI CONNECTION TEST ══════════════════════════════
+async function testAiConnection() {
+  const dot = document.getElementById('aiStatusDot');
+  const res = document.getElementById('aiTestResult');
+  if (dot) dot.textContent = '🟡';
+  if (res) { res.style.display = 'block'; res.textContent = '⏳ Подключаюсь...'; res.style.color = 'var(--mist)'; }
+
+  try {
+    const r = await fetch(OR_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + OR_KEY,
+      },
+      body: JSON.stringify({
+        model: 'meta-llama/llama-3.3-70b-instruct:free',
+        max_tokens: 20,
+        messages: [{ role: 'user', content: 'Скажи "ОК" по-русски' }]
+      })
+    });
+
+    const data = await r.json();
+    console.log('Test response:', JSON.stringify(data));
+
+    if (!r.ok) {
+      if (dot) dot.textContent = '🔴';
+      if (res) { res.textContent = '❌ Ошибка ' + r.status + ': ' + (data.error?.message || JSON.stringify(data)); res.style.color = 'var(--rose)'; }
+      return;
+    }
+
+    const text = data.choices?.[0]?.message?.content;
+    if (text) {
+      if (dot) dot.textContent = '🟢';
+      if (res) { res.textContent = '✅ Работает! Ответ: ' + text.trim(); res.style.color = 'var(--teal)'; }
+    } else {
+      if (dot) dot.textContent = '🟡';
+      if (res) { res.textContent = '⚠️ Странный ответ: ' + JSON.stringify(data); res.style.color = 'var(--sr)'; }
+    }
+  } catch(e) {
+    if (dot) dot.textContent = '🔴';
+    if (res) { res.textContent = '❌ Сеть: ' + e.message; res.style.color = 'var(--rose)'; }
+  }
+}
+
+// ═══ RESET ═══════════════════════════════════════════
+async function resetAll() {
+  JOURNAL = []; TAROT = []; TODAY = {};
+  CYCLE = { last:'', len:28, dur:5, history:[] };
+  PROFILE = { name:'', dob:'' };
+  await Promise.all([
+    save(K.journal, JOURNAL), 
+    save(K.tarot, TAROT), 
+    save(K.today, TODAY),
+    save(K.cycle, CYCLE),
+    save(K.profile, PROFILE),
+    // API_KEY is hardcoded — nothing to reset
+  ]);
+  renderJournal(); renderTarotHistory(); renderCycle(); renderToday();
+  toast('🔄 Данные сброшены');
+}
+
+// ═══ HELPERS ════════════════════════════════════════
+function setText(id, val) { 
+  const e = document.getElementById(id); 
+  if(e) e.textContent = val; 
+}
+
+let toastTmr = null;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg; el.classList.add('on');
+  if (toastTmr) clearTimeout(toastTmr);
+  toastTmr = setTimeout(() => el.classList.remove('on'), 3000);
+}
+</script>
+</body>
+</html>
