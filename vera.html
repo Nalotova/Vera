@@ -1,26 +1,101 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vera</title>
-</head>
-<body>
-    <h1>Vera</h1>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        nav { margin-bottom: 20px; }
+        nav a { margin: 0 10px; text-decoration: none; }
+        .hidden { display: none; }
+        .container { margin: 20px; }
+    </style>
     <script>
-        const apiKey = 'YOUR_HARDCODED_API_KEY'; // Hardcoded API key
-        let cycleLength = 28; // Example cycle length
+        const API_KEY = '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';
 
-        function recalculateCycles(startDate, newLength) {
-            // Function to recalculate cycles based on the actual cycle length
-            const now = new Date();
-            const previousCycles = Math.floor((now - new Date(startDate)) / (newLength * 24 * 60 * 60 * 1000));
-            console.log('Recalculated previous cycles: ', previousCycles);
-            return previousCycles;
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(page).classList.remove('hidden');
         }
 
-        // Example usage:
-        const startDate = '2026-02-28'; // Example start date
-        const previousCycleCount = recalculateCycles(startDate, cycleLength);
-        console.log('Starting from:', startDate, 'with cycle length:', cycleLength);
+        function cycleManagement() {
+            // Logic for cycle management here...
+            console.log('Cycle management logic is executed');
+        }
+
+        function biorhythmCalculations() {
+            // Logic for biorhythm calculations...
+            console.log('Biorhythm calculations executed');
+        }
+
+        function tarotInterpretation() {
+            // Logic for tarot interpretation...
+            console.log('Tarot interpretation executed');
+        }
+
+        function journalEntries() {
+            // Logic for journal entries...
+            console.log('Journal entries function executed');
+        }
+
+        function chatFunctionality() {
+            // Logic for chat functionality...
+            console.log('Chat functionality executed');
+        }
+
+        function handleNavigation() {
+            // Example of cycle recalculation logic
+year = 2026; 
+month = 2; 
+day = 28;
+            console.log(`Calculating cycles for date: ${year}-${month}-${day}`);
+        }
+
+        window.onload = function() {
+            handleNavigation();
+        };
     </script>
+</head>
+<body>
+    <nav>
+        <a href="#" onclick="showPage('today')">Today</a>
+        <a href="#" onclick="showPage('cycle')">Cycle</a>
+        <a href="#" onclick="showPage('bio')">Biorhythm</a>
+        <a href="#" onclick="showPage('tarot')">Tarot</a>
+        <a href="#" onclick="showPage('journal')">Journal</a>
+        <a href="#" onclick="showPage('analysis')">Analysis</a>
+        <a href="#" onclick="showPage('settings')">Settings</a>
+    </nav>
+    <div class="container">
+        <div id="today" class="page">
+            <h1>Today's Page</h1>
+            <p>Display current date and user information.</p>
+        </div>
+        <div id="cycle" class="page hidden">
+            <h1>Cycle Management</h1>
+            <p>This section handles cycle management.</p>
+        </div>
+        <div id="bio" class="page hidden">
+            <h1>Biorhythm Calculations</h1>
+            <p>This section displays biorhythm calculations.</p>
+        </div>
+        <div id="tarot" class="page hidden">
+            <h1>Tarot Interpretation</h1>
+            <p>This section gives tarot interpretations.</p>
+        </div>
+        <div id="journal" class="page hidden">
+            <h1>Journal Entries</h1>
+            <p>This section contains journal entries.</p>
+        </div>
+        <div id="analysis" class="page hidden">
+            <h1>AI Analysis</h1>
+            <p>This section has automatic AI analysis.</p>
+        </div>
+        <div id="settings" class="page hidden">
+            <h1>Settings</h1>
+            <p>This section allows users to set preferences.</p>
+        </div>
+    </div>
 </body>
 </html>
