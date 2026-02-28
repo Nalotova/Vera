@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vera</title>
+</head>
+<body>
+    <h1>Vera</h1>
+    <script>
+        const apiKey = 'YOUR_HARDCODED_API_KEY'; // Hardcoded API key
+        let cycleLength = 28; // Example cycle length
+
+        function recalculateCycles(startDate, newLength) {
+            // Function to recalculate cycles based on the actual cycle length
+            const now = new Date();
+            const previousCycles = Math.floor((now - new Date(startDate)) / (newLength * 24 * 60 * 60 * 1000));
+            console.log('Recalculated previous cycles: ', previousCycles);
+            return previousCycles;
+        }
+
+        // Example usage:
+        const startDate = '2026-02-28'; // Example start date
+        const previousCycleCount = recalculateCycles(startDate, cycleLength);
+        console.log('Starting from:', startDate, 'with cycle length:', cycleLength);
+    </script>
+</body>
+</html>
